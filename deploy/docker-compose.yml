@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  tarantool:
+    container_name: tarantool
+    image: tarantool/tarantool:2.6.0
+    command: "tarantool init.lua"
+    environment:
+      TARANTOOL_USER_NAME: myusername
+      TARANTOOL_USER_PASSWORD: mysecretpassword
+      TARANTOOL_FORCE_RECOVERY: "true"
+    volumes:
+      - tarantoolData:/var/lib/tarantool
+      - ./tarantool/init.lua:/opt/tarantool/init.lua
+    networks:
+      - mynet
+    ports:
+      - "3301:3301"
+
+networks:
+  mynet:
+    driver: bridge
+
+volumes:
+  tarantoolData:
