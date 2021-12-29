@@ -4,21 +4,45 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
+	"github.com/tarantool/go-tarantool"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"taran/infrastructure/config"
+	"taran/internal/core/usecase"
+	v1 "taran/internal/delivery/http/v1"
+	"taran/internal/repository"
 	"time"
 )
 
 func main() {
+	appConfig := config.New()
+
+	conn, err := tarantool.Connect(
+		fmt.Sprintf("%s:%s", appConfig.TarantoolDB.Host, appConfig.TarantoolDB.Port),
+		tarantool.Opts{
+			User: appConfig.TarantoolDB.User,
+			Pass: appConfig.TarantoolDB.Password,
+		})
+
+	if err != nil {
+		log.Fatalf("Connection refused: ", err.Error())
+	}
+
+	defer conn.Close()
+
+	booksRepository := repository.NewBooksRepository(conn)
+	authorsRepository := repository.NewAuthorsRepository(conn)
+	booksUseCase := usecase.NewBooksUseCase(booksRepository, authorsRepository)
+	authorsUseCase := usecase.NewAuthorsUseCase(authorsRepository, booksRepository)
+
 	router := gin.Default()
 
-	//authhttp.RegisterHTTPEndpoints(r, a.authUC)
+	v1.RegisterHTTPEndpoints(router, booksUseCase, authorsUseCase)
 
 	server := &http.Server{
-		Addr:         fmt.Sprintf("%s:%s", viper.GetString("url"), viper.GetString("port")),
+		Addr:         fmt.Sprintf(":%s", appConfig.Port),
 		Handler:      router,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
