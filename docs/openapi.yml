@@ -1,0 +1,355 @@
+swagger: "2.0"
+info:
+  title: Tarantool-service
+  description: Tarantool-service
+  version: 1.0.0
+host: localhost:8888
+schemes:
+  - "http"
+paths:
+  /authors:
+    post:
+      tags:
+        - "author"
+      summary: "Add a new author"
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: ""
+          required: true
+          schema: # Request body contents
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: A Mikheev
+      responses:
+        "200":
+          description: "Created"
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: A Mikheev
+                  id:
+                    type: string
+                    example: e02bfe4c-f7d9-414b-a8e3-44373f7ab80d
+                  booksCount:
+                    type: integer
+                    example: 0
+    get:
+      tags:
+        - "author"
+      summary: "Get authors"
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: query
+          name: "limit"
+          description: "Limit values"
+          required: false
+          schema: # Request body contents
+            type: integer
+            example: 10
+            default: 10
+        - in: query
+          name: "offset"
+          description: "offset values"
+          required: false
+          schema: # Request body contents
+            type: integer
+            example: 10
+            default: 0
+        - in: query
+          name: "booksLimit"
+          description: "Getting authors who has more or equal books than parameter value"
+          required: false
+          schema: # Request body contents
+            type: integer
+            example: 2
+            default: 0
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: e02bfe4c-f7d9-414b-a8e3-44373f7ab80d
+                    name:
+                      type: string
+                      example: A Mikheev
+                    booksCount:
+                      type: integer
+                      example: 0
+  /authors/:id/books:
+    post:
+      tags:
+        - "author"
+      summary: "Add a new book"
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: query
+          name: id
+          description: Author ID
+          required: true
+          schema:
+            type: string
+            example: e02bfe4c-f7d9-414b-a8e3-44373f7ab80d
+        - in: "body"
+          name: "body"
+          description: ""
+          required: true
+          schema: # Request body contents
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    example: Dracula
+                  description:
+                    type: string
+                    example: horror
+      responses:
+        "200":
+          description: "Created"
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: e02bfe4c-f7d9-414b-a8e3-44373f7ab80d
+                  authorId:
+                    type: string
+                    example: e02bfe4c-f7d9-414b-a8e3-44373f7ab80d
+                  title:
+                    type: string
+                    example: Dracula
+                  description:
+                    type: string
+                    example: horror
+    get:
+      tags:
+        - "author"
+      summary: "Get books by author"
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: query
+          name: id
+          description: Author ID
+          required: true
+          schema:
+            type: string
+            example: e02bfe4c-f7d9-414b-a8e3-44373f7ab80d
+        - in: query
+          name: "offset"
+          description: "offset values"
+          required: false
+          schema: # Request body contents
+            type: integer
+            example: 10
+            default: 0
+        - in: query
+          name: "limit"
+          description: "Limit values"
+          required: false
+          schema: # Request body contents
+            type: integer
+            example: 10
+            default: 10
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: e02bfe4c-f7d9-414b-a8e3-44373f7ab80d
+                    authorId:
+                      type: string
+                      example: e02bfe4c-f7d9-414b-a8e3-44373f7ab80d
+                    title:
+                      type: string
+                      example: Dracula
+                    description:
+                      type: string
+                      example: horror
+  /books:
+    get:
+      tags:
+        - "book"
+      summary: "Get all booksr"
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: query
+          name: "offset"
+          description: "offset values"
+          required: false
+          schema: # Request body contents
+            type: integer
+            example: 10
+            default: 0
+        - in: query
+          name: "limit"
+          description: "Limit values"
+          required: false
+          schema: # Request body contents
+            type: integer
+            example: 10
+            default: 10
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: e02bfe4c-f7d9-414b-a8e3-44373f7ab80d
+                    authorId:
+                      type: string
+                      example: e02bfe4c-f7d9-414b-a8e3-44373f7ab80d
+                    title:
+                      type: string
+                      example: Dracula
+                    description:
+                      type: string
+                      example: horror
+    delete:
+      tags:
+        - "book"
+      summary: "Bulk delete books"
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: ""
+          required: true
+          schema: # Request body contents
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: 88c6974b-eaed-4592-8cfc-c5550377f8bc
+      responses:
+        "202":
+          description: "Accepted"
+
+  /books/:id:
+    patch:
+      tags:
+        - "book"
+      summary: "Get all booksr"
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: ""
+          required: true
+          schema: # Request body contents
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  authorId:
+                    type: string
+                    example: 7f2f90d1-f8cd-412f-be89-e13eb4921973
+                  title:
+                    type: string
+                    example: Dracula
+                  description:
+                    type: string
+                    example: horror
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: e02bfe4c-f7d9-414b-a8e3-44373f7ab80d
+                    authorId:
+                      type: string
+                      example: e02bfe4c-f7d9-414b-a8e3-44373f7ab80d
+                    title:
+                      type: string
+                      example: Dracula
+                    description:
+                      type: string
+                      example: horror
+
+
+
+
+
+
+

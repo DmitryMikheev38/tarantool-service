@@ -16,7 +16,9 @@ func RegisterHTTPEndpoints(router *gin.Engine, booksUC interfaces.BooksUseCase, 
 		api.POST("/authors", authorsHandler.Create)
 		api.GET("/authors", authorsHandler.GetList)
 		api.POST("/authors/:id/books", authorsHandler.AddBook)
-		api.POST("/books", booksHandler.Create)
+		api.GET("/authors/:id/books", authorsHandler.GetBooksList)
 		api.GET("/books", booksHandler.GetList)
+		api.DELETE("/books", booksHandler.BulkDelete)
+		api.PATCH("/books/:id", booksHandler.Update)
 	}
 }

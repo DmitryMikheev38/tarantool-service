@@ -9,11 +9,25 @@ services:
       TARANTOOL_FORCE_RECOVERY: "true"
     volumes:
       - tarantoolData:/var/lib/tarantool
-      - ./tarantool/init.lua:/opt/tarantool/init.lua
+      - ./deploy/tarantool/init.lua:/opt/tarantool/init.lua
     networks:
       - mynet
     ports:
       - "3301:3301"
+
+  http:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tarantool-http
+    volumes:
+      - .env:/root/.env
+    networks:
+      - mynet
+    depends_on:
+      - tarantool
+    ports:
+      - "8888:8888"
 
 networks:
   mynet:

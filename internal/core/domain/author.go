@@ -1,8 +1,7 @@
 package domain
 
 type Author struct {
-	ID         string
-	Name       string
-	BooksCount int
-	Books      []*Book
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	BooksCount int    `json:"booksCount"`
 }

@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"taran/internal/core/domain"
-	"taran/internal/core/domain/dto"
 	"taran/internal/core/interfaces"
 )
 
@@ -26,16 +25,17 @@ func (uc *AuthorsUseCase) Create(author *domain.Author) error {
 	return nil
 }
 
-func (uc *AuthorsUseCase) GetList(dto dto.GetListAuthorsParams) ([]*domain.Author, error) {
-	return uc.repository.GetList(dto.Limit, dto.Offset, dto.BooksLimit)
+func (uc *AuthorsUseCase) GetList(booksLimit int, limit, offset uint32) ([]*domain.Author, error) {
+	return uc.repository.GetList(limit, offset, booksLimit)
 }
 
-func (uc *AuthorsUseCase) AddBook(authorID string, book *domain.Book) error {
+func (uc *AuthorsUseCase) AddBook(book *domain.Book) error {
+	author, err := uc.repository.GetByID(book.AuthorID)
 
-	author, err := uc.repository.GetByID(authorID)
 	if err != nil {
 		return err
 	}
+
 	if author == nil {
 		return nil
 	}
@@ -44,10 +44,11 @@ func (uc *AuthorsUseCase) AddBook(authorID string, book *domain.Book) error {
 		return err
 	}
 
-	if err := uc.booksRepository.SaveAuthorRelationship(book.ID, authorID); err != nil {
-		return err
-	}
-
 	author.BooksCount++
+
 	return uc.repository.Update(author)
+}
+
+func (uc *AuthorsUseCase) GetBooksList(authorID string, limit, offset uint32) ([]*domain.Book, error) {
+	return uc.booksRepository.GetByAuthorList(authorID, limit, offset)
 }

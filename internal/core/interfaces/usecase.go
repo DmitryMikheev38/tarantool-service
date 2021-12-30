@@ -2,17 +2,17 @@ package interfaces
 
 import (
 	"taran/internal/core/domain"
-	"taran/internal/core/domain/dto"
 )
 
 type BooksUseCase interface {
-	Create(book *domain.Book) error
-	GetList() ([]*domain.Book, error)
+	GetList(limit, offset uint32) ([]*domain.Book, error)
+	BulkDelete(books []*domain.Book) error
+	Update(book *domain.Book) error
 }
 
 type AuthorsUseCase interface {
 	Create(book *domain.Author) error
-	GetList(params dto.GetListAuthorsParams) ([]*domain.Author, error)
-	AddBook(authorID string, book *domain.Book) error
-	GetBook() (*domain.Book, error)
+	GetList(booksLimit int, limit, offset uint32) ([]*domain.Author, error)
+	AddBook(book *domain.Book) error
+	GetBooksList(authorID string, limit, offset uint32) ([]*domain.Book, error)
 }

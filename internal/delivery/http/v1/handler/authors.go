@@ -3,10 +3,12 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"taran/internal/core/domain"
-	"taran/internal/core/domain/dto"
 	"taran/internal/core/interfaces"
 )
+
+const DefaultLimit = 10
 
 type AuthorsHandler struct {
 	uc interfaces.AuthorsUseCase
@@ -43,8 +45,8 @@ func (h *AuthorsHandler) AddBook(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, err)
 	}
 
-	authorID := ctx.Param("id")
-	if err := h.uc.AddBook(authorID, &request.Data); err != nil {
+	request.Data.AuthorID = ctx.Param("id")
+	if err := h.uc.AddBook(&request.Data); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, err)
 	}
 
@@ -52,13 +54,29 @@ func (h *AuthorsHandler) AddBook(ctx *gin.Context) {
 }
 
 func (h *AuthorsHandler) GetList(ctx *gin.Context) {
-	var params dto.GetListAuthorsParams
+	booksLimit, _ := strconv.Atoi(ctx.Query("booksLimit"))
+	limit, _ := strconv.Atoi(ctx.Query("limit"))
+	if limit == 0 {
+		limit = DefaultLimit
+	}
+	offset, _ := strconv.Atoi(ctx.Query("offset"))
 
-	if err := ctx.ShouldBindQuery(&params); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, err)
+	result, err := h.uc.GetList(booksLimit, uint32(limit), uint32(offset))
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, err)
 	}
 
-	result, err := h.uc.GetList(params)
+	ctx.JSON(http.StatusOK, gin.H{"data": result})
+}
+
+func (h *AuthorsHandler) GetBooksList(ctx *gin.Context) {
+	authorID := ctx.Param("id")
+	limit, _ := strconv.Atoi(ctx.Query("limit"))
+	if limit == 0 {
+		limit = DefaultLimit
+	}
+	offset, _ := strconv.Atoi(ctx.Query("offset"))
+	result, err := h.uc.GetBooksList(authorID, uint32(limit), uint32(offset))
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, err)
 	}
